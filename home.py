@@ -12,6 +12,6 @@ import ee
 import geemap.foliumap as geemap
 
 '''
-# India NDVI 2013-2016
+# India NDVI 2010-2013
 '''
-st.markdown("![Alt Text](https://earthengine.googleapis.com/v1alpha/projects/ee-slik300/videoThumbnails/89daadeedfb34a5f14da657247574f77-2533e249d2d100bec3d05d4e7e71178a:getPixels)")
+st.markdown("![Alt Text](https://earthengine.googleapis.com/v1alpha/projects/ee-slik300/videoThumbnails/21d1c5393e54d3d493900af609a59b3b-1c640589449c33cc9398e50f77d4ffc4:getPixels)")
