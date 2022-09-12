@@ -21,7 +21,7 @@ install_requirements:
 # ----------------------------------
 
 streamlit:
-	-@streamlit run home.py
+	-@streamlit run Home.py
 
 heroku_login:
 	-@heroku login
