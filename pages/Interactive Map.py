@@ -10,8 +10,7 @@ from ee import ImageCollection
 
 st.title('Food Security Forecast Explorer')
 st.write('''
-        ### Select a Geography
-        Identify which County you are interested in exploring.
+        ### Select a which County you are interested in exploring.
         ''')
 
 
@@ -20,7 +19,7 @@ state = st.selectbox("Select a state", STATES).strip()
 ee.Initialize()
 Map = geemap.Map()
 
-county_shp = 'data/ee_shape/gadm41_IND_1.shp'
+county_shp = '~/data/ee_shape/gadm41_IND_1.shp'
 
 ee_shape = geemap.shp_to_ee(county_shp)
 
