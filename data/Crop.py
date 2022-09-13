@@ -1,0 +1,1 @@
+CROPS = ['Soybeans', 'Corn']
