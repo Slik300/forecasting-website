@@ -1,1 +1,7 @@
 streamlit
+wheel==0.37.1
+earthengine-api==0.1.323
+geemap
+plotly
+geopandas
+pyproj
