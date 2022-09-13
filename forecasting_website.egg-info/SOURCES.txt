@@ -1,0 +1,8 @@
+MANIFEST.in
+requirements.txt
+setup.py
+forecasting_website.egg-info/PKG-INFO
+forecasting_website.egg-info/SOURCES.txt
+forecasting_website.egg-info/dependency_links.txt
+forecasting_website.egg-info/requires.txt
+forecasting_website.egg-info/top_level.txt
