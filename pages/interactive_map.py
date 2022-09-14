@@ -10,6 +10,8 @@ from data.Information import STATES
 
 import os
 
+st.set_page_config(layout="wide")
+
 st.title('Food Security Forecast Explorer')
 
 county_shp = 'data/ee_shape/admin1/ind.shp'
