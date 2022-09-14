@@ -4,7 +4,7 @@ with open("requirements.txt") as f:
     content = f.readlines()
 requirements = [x.strip() for x in content]
 
-setup(name="forecasting-website",
+setup(name="forecasting_website",
       version="1.0",
       description="crop yield forecasting frontend",
       packages=find_packages(),
