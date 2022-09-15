@@ -94,8 +94,8 @@ def render(country_name, country_code, true_yield_file, center):
 
     average_true = true.groupby('YEAR').mean().reset_index()
 
-    st.title(f'{country_name} Crop Yield Prediction')
-    st.write("")
+    #st.title(f'{country_name} Crop Yield Prediction')
+    #st.write("")
 
     with col1:
         st.subheader("Prediction Map")
