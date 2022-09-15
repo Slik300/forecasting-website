@@ -121,12 +121,12 @@ def render(country_name, country_code, true_yield_file, center):
             state_predictions = predictions[predictions['county_names'].str.lower().str.strip() == state_select]
             state_true = true[true['STATE'].str.lower().str.strip() == state_select]
         p = pd.DataFrame({
-            'Yield': state_predictions['predictions'],
+            'Yield (t/ha)': state_predictions['predictions'],
             'Year': state_predictions['years'],
             'Series': np.array(['Predicted Yield' for _ in range(len(state_predictions))]),
         })
         t = pd.DataFrame({
-            'Yield': state_true['YIELD'],
+            'Yield (t/ha)': state_true['YIELD'],
             'Year': state_true['YEAR'],
             'Series': np.array(['Real Yield' for _ in range(len(state_true))]),
         })
@@ -135,7 +135,7 @@ def render(country_name, country_code, true_yield_file, center):
             x=alt.X('Year:O',
                scale=alt.Scale(zero=False)
             ),
-            y=alt.Y('Yield:Q',
+            y=alt.Y('Yield (t/ha):Q',
                scale=alt.Scale(zero=False)
             ),
             color='Series:N',
