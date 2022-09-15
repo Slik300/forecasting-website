@@ -61,9 +61,13 @@ def render(country_name, country_code, true_yield_file, center):
 
     for code in (country_code, country_code.lower()):
         county_shp = f'data/shape_files/{country_code}/admin1/{code}.shp'
+        print(county_shp)
         try:
             geo = load_geo(county_shp)
+            print("succeeded!")
+            break
         except:
+            print("failed!")
             continue
 
     map_df = geo['map_df']
