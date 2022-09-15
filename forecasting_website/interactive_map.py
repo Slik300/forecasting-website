@@ -59,9 +59,12 @@ def render(country_name, country_code, true_yield_file, center):
     _lock = RendererAgg.lock
     yield_data = load_yields(country_name, country_code, true_yield_file)
 
-    county_shp = f'data/shape_files/{country_code}/admin1/{country_code.lower()}.shp'
-
-    geo = load_geo(county_shp)
+    for code in (country_code, country_code.lower()):
+        county_shp = f'data/shape_files/{country_code}/admin1/{code}.shp'
+        try:
+            geo = load_geo(county_shp)
+        except:
+            continue
 
     map_df = geo['map_df']
     geojson = geo['geojson']
