@@ -10,6 +10,7 @@ import plotly.graph_objs as go
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
+from matplotlib.backends.backend_agg import RendererAgg
 
 @st.experimental_memo
 def load_yields(country_name, country_code, true_yield_file):
@@ -54,6 +55,8 @@ def build_choropleths(yearly_yields, map_df, geojson, zmin, zmax):
 
 def render(country_name, country_code, true_yield_file, center):
 
+    st.set_page_config(layout="wide")
+    _lock = RendererAgg.lock
     yield_data = load_yields(country_name, country_code, true_yield_file)
 
     county_shp = f'data/shape_files/{country_code}/admin1/{country_code}.shp'
@@ -86,11 +89,12 @@ def render(country_name, country_code, true_yield_file, center):
     average_true = true.groupby('YEAR').mean().reset_index()
 
     st.title(f'{country_name} Crop Yield Prediction')
+    st.write("")
     with col1:
-
+        st.subheader("Prediction Map")
         choropleths = build_choropleths(yearly_predictions, map_df, geojson, zmin, zmax)
         year_select = st.select_slider("select year", choropleths.keys())
-        layout = go.Layout(width=1000, height=1000, mapbox=dict(center=center, accesstoken=mapboxt, zoom=3,style="stamen-terrain"))
+        layout = go.Layout(width=500, height=500, mapbox=dict(center=center, accesstoken=mapboxt, zoom=3,style="stamen-terrain"))
         #fig = make_subplots(rows=1, cols=2)
         #fig.add_trace(
 
@@ -98,7 +102,8 @@ def render(country_name, country_code, true_yield_file, center):
         fig = go.Figure(data=choropleths[year_select], layout=layout)
         st.plotly_chart(fig)
 
-    with col2:
+    with col2, _lock:
+        st.subheader("Prediction Timeseries")
         fig = plt.figure()
         state_select = st.selectbox("select state to view data for each year", options=predictions['county_names'].drop_duplicates()).lower().strip()
         ax = fig.add_subplot(1,1,1)
