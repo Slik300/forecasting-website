@@ -94,7 +94,7 @@ def render(country_name, country_code, true_yield_file, center):
         st.subheader("Prediction Map")
         choropleths = build_choropleths(yearly_predictions, map_df, geojson, zmin, zmax)
         year_select = st.select_slider("select year", choropleths.keys())
-        layout = go.Layout(width=500, height=500, mapbox=dict(center=center, accesstoken=mapboxt, zoom=3,style="stamen-terrain"))
+        layout = go.Layout(width=1000, height=1000, mapbox=dict(center=center, accesstoken=mapboxt, zoom=3,style="stamen-terrain"))
         #fig = make_subplots(rows=1, cols=2)
         #fig.add_trace(
 
