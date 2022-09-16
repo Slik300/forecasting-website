@@ -131,7 +131,7 @@ def render(country_name, country_code, true_yield_file, center):
             'Series': np.array(['Real Yield' for _ in range(len(state_true))]),
         })
         source = pd.concat((p, t))
-        chart = alt.Chart(source).mark_circle(size=60).encode(
+        chart = alt.Chart(source).mark_circle(size=200).encode(
             x=alt.X('Year:O',
                scale=alt.Scale(zero=False)
             ),
