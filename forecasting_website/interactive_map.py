@@ -1,6 +1,7 @@
 import os
 import json
 
+import altair as alt
 import pandas as pd
 import streamlit as st
 import geopandas as gpd
@@ -11,6 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 from matplotlib.backends.backend_agg import RendererAgg
+
 
 @st.experimental_memo
 def load_yields(country_name, country_code, true_yield_file):
@@ -59,9 +61,13 @@ def render(country_name, country_code, true_yield_file, center):
     _lock = RendererAgg.lock
     yield_data = load_yields(country_name, country_code, true_yield_file)
 
-    county_shp = f'data/shape_files/{country_code}/admin1/{country_code}.shp'
-
-    geo = load_geo(county_shp)
+    for code in (country_code, country_code.lower()):
+        county_shp = f'data/shape_files/{country_code}/admin1/{code}.shp'
+        try:
+            geo = load_geo(county_shp)
+            break
+        except:
+            continue
 
     map_df = geo['map_df']
     geojson = geo['geojson']
@@ -88,42 +94,58 @@ def render(country_name, country_code, true_yield_file, center):
 
     average_true = true.groupby('YEAR').mean().reset_index()
 
-    st.title(f'{country_name} Crop Yield Prediction')
-    st.write("")
+    #st.title(f'{country_name} Crop Yield Prediction')
+    #st.write("")
+
     with col1:
         st.subheader("Prediction Map")
         choropleths = build_choropleths(yearly_predictions, map_df, geojson, zmin, zmax)
         year_select = st.select_slider("select year", choropleths.keys())
-        layout = go.Layout(width=500, height=500, mapbox=dict(center=center, accesstoken=mapboxt, zoom=3,style="stamen-terrain"))
-        #fig = make_subplots(rows=1, cols=2)
-        #fig.add_trace(
-
-        #)
+        layout = go.Layout(width=1000, height=1000, mapbox=dict(center=center, accesstoken=mapboxt, zoom=3,style="stamen-terrain"))
         fig = go.Figure(data=choropleths[year_select], layout=layout)
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, use_container_width=True)
 
     with col2, _lock:
         st.subheader("Prediction Timeseries")
         fig = plt.figure()
-        state_select = st.selectbox("select state to view data for each year", options=predictions['county_names'].drop_duplicates()).lower().strip()
+        names = predictions['county_names'].drop_duplicates().to_numpy()
+        average_name = np.array(["Average"])
+        names = np.concatenate((average_name, names), 0)
+        state_select = st.selectbox("select state to view data for each year", options=names).lower().strip()
         ax = fig.add_subplot(1,1,1)
-
         ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-        state_predictions = predictions[predictions['county_names'].str.lower().str.strip() == state_select]
-        state_true = true[true['STATE'].str.lower().str.strip() == state_select]
-        ax.scatter(
-            state_predictions['years'], state_predictions['predictions'], color='red', label='predicted yield', alpha=0.6
+        if state_select == 'average':
+            state_predictions = average_predictions
+            state_true = average_true
+        else:
+            state_predictions = predictions[predictions['county_names'].str.lower().str.strip() == state_select]
+            state_true = true[true['STATE'].str.lower().str.strip() == state_select]
+        p = pd.DataFrame({
+            'Yield (t/ha)': state_predictions['predictions'],
+            'Year': state_predictions['years'],
+            'Series': np.array(['Predicted Yield' for _ in range(len(state_predictions))]),
+        })
+        t = pd.DataFrame({
+            'Yield (t/ha)': state_true['YIELD'],
+            'Year': state_true['YEAR'],
+            'Series': np.array(['Real Yield' for _ in range(len(state_true))]),
+        })
+        source = pd.concat((p, t))
+        chart = alt.Chart(source).mark_circle(size=200).encode(
+            x=alt.X('Year:O',
+               scale=alt.Scale(zero=False)
+            ),
+            y=alt.Y('Yield (t/ha):Q',
+               scale=alt.Scale(zero=False)
+            ),
+            color='Series:N',
         )
-        ax.scatter(
-            state_true['YEAR'], state_true['YIELD'], color='green', label='real yield', alpha=0.6
-        )
-        ax.scatter(
-            average_predictions['years'], average_predictions['predictions'], color='red', label='predicted yield (mean)', alpha=0.2
-        )
-        ax.scatter(
-            average_true['YEAR'], average_true['YIELD'], color='green', label='real yield (mean)', alpha=0.2
-        )
-
-        ax.legend(loc='upper left', prop={'size': 6})
-
-        st.write(fig)
+        st.altair_chart(chart, use_container_width=True)
+        #ax.scatter(
+        #    state_predictions['years'], state_predictions['predictions'], color='red', label='predicted yield', alpha=0.6
+        #)
+        #ax.scatter(
+        #    state_true['YEAR'], state_true['YIELD'], color='green', label='real yield', alpha=0.6
+        #)
+        #ax.legend(loc='upper left', prop={'size': 6})
+        #st.write(fig)
